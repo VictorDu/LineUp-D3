@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    .bar {
+        fill: steelblue;
+    }
+    .bar:hover {
+        fill: brown;
+    }
+    .axis {
+        font: 10px sans-serif;
+    }
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+    .x.axis path {
+        display: none;
+    }
+</style>
+<body>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script>
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+            width = 1024 - margin.left - margin.right,
+            height = 7980 - margin.top - margin.bottom;
+    var x = d3.scale.linear()
+            .range([0, width]);
+    var y = d3.scale.ordinal().rangeRoundBands([0, height]);
+    var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+    var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+    var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var Academic_Reputation_Score = "Academic Reputation Score";
+    var Employer_Reputation_Score = "Employer Reputation Score";
+    var Faculty_Student_Score = "Faculty Student Score";
+    var Citations_Per_Faculty_Score = "Citations Per Faculty Score";
+    var International_Faculty_Score = "International Faculty Score";
+    var International_Students_Score = "International Students Score";
+    var Institution = "Institution";
+
+    var parameters = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+
+    function type(d) {
+        d[Academic_Reputation_Score] = +d[Academic_Reputation_Score];
+        d[Employer_Reputation_Score] = +d[Employer_Reputation_Score];
+        d[Faculty_Student_Score] = +d[Faculty_Student_Score];
+        d[Citations_Per_Faculty_Score] = +d[Citations_Per_Faculty_Score];
+        d[International_Faculty_Score] = +d[International_Faculty_Score];
+        d[International_Students_Score] = +d[International_Students_Score];
+        return d;
+    }
+    d3.csv("https://raw.githubusercontent.com/VictorDu/LineUp-D3/master/data/unvRank2013.csv",type, function(error, data) {
+        if (error) throw error;
+        var map = new Object();
+        for (i = 0; i < data.length; i++) {
+            map[data[i][Institution]] = i;
+        }
+
+        x.domain(d3.extent(data, function(d) { return d[Academic_Reputation_Score]; }));
+        console.log(data[0]["Institution"]);
+        console.log(y(data[0]["Institution"]));
+        //console.log(data.map(function(d) { return d.Institution; }));
+//        svg.append("g")
+//                .attr("class", "y axis")
+//                .call(yAxis)
+//                .append("text")
+//                .attr("transform", "rotate(-90)")
+//                .attr("y", 6)
+//                .attr("dy", ".71em")
+//                .style("text-anchor", "end")
+//                .text("Total bedrooms");
+        var h = 20;
+        svg.selectAll(".bar")
+                .data(data)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", 0)
+                .attr("width", function(d) { return x(d[Academic_Reputation_Score]); })
+                .attr("y", function(d) { return map[d[Institution]] * 30; })
+                .attr("height", h);
+    });
+</script>
