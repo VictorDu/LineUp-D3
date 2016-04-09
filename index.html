@@ -10,6 +10,11 @@
     .axis {
         font: 10px sans-serif;
     }
+
+    .bar1 {
+        fill: steelblue;
+    }
+
     .axis path,
     .axis line {
         fill: none;
@@ -25,7 +30,7 @@
 <script>
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
             width = 1024 - margin.left - margin.right,
-            height = 7980 - margin.top - margin.bottom;
+            height = 10000 - margin.top - margin.bottom;
     var x = d3.scale.linear()
             .range([0, width]);
     var y = d3.scale.ordinal().rangeRoundBands([0, height]);
@@ -47,9 +52,53 @@
     var Citations_Per_Faculty_Score = "Citations Per Faculty Score";
     var International_Faculty_Score = "International Faculty Score";
     var International_Students_Score = "International Students Score";
+
+    var colors = { "Academic Reputation Score": "#98abc5",
+        "Employer Reputation Score": "#8a89a6",
+        "Faculty Student Score": "#7b6888",
+        "Citations Per Faculty Score": "#6b486b",
+        "International Faculty Score": "#a05d56",
+        "International Students Score": "#d0743c"
+    };
+    console.log(colors);
+
+
+
+    var options = [Academic_Reputation_Score, Employer_Reputation_Score,
+        Faculty_Student_Score, Citations_Per_Faculty_Score,
+        International_Faculty_Score, International_Students_Score]
+
+    var options_map = new Object();
+    options.forEach(function(option) {
+        options_map[option] = new Object();
+        options_map[option]["parameters"] = 1.0;
+    })
+    parameters_sum = 0;
+    for (var key in options_map) {
+        if (options_map.hasOwnProperty(key)) {
+            parameters_sum += options_map[key]["parameters"];
+        }
+    }
+
+    console.log(parameters_sum);
+
+    var current_start = 0;
+
+    for (i =0; i < options.length ; i++) {
+        option_name = options[i];
+        options_map[option_name]["start"] = current_start;
+        option_range = options_map[option_name]["parameters"] / parameters_sum * width;
+        options_map[option_name]["x"] = d3.scale.linear().range([0, option_range]);
+        current_start = current_start + option_range;
+    }
+
+    console.log(options_map);
+
+
+
     var Institution = "Institution";
 
-    var parameters = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    //var parameters = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
     function type(d) {
         d[Academic_Reputation_Score] = +d[Academic_Reputation_Score];
@@ -61,33 +110,52 @@
         return d;
     }
     d3.csv("https://raw.githubusercontent.com/VictorDu/LineUp-D3/master/data/unvRank2013.csv",type, function(error, data) {
+
+//        console.log(options_map);
         if (error) throw error;
         var map = new Object();
         for (i = 0; i < data.length; i++) {
             map[data[i][Institution]] = i;
         }
 
+        var new_data = [];
+        for (i =0; i < options.length ; i++) {
+            options_map[options[i]]["x"].domain(d3.extent(data, function(d) { return d[options[i]]; }))
+        }
+        for (i = 0; i < data.length ; i++){
+            current = 0;
+            for( j = 0; j < options.length; j++){
+                var temp = new Object();
+                option_name =options[j];
+//                temp["x"] = options_map[option_name]["start"];
+                temp["x"] = current;
+                temp["width"] = options_map[option_name]["x"](data[i][option_name]);
+                current += temp["width"];
+                temp["y"] = map[data[i][Institution]] * 30;
+                temp["color"] = colors[option_name];
+                new_data.push(temp);
+            }
+        }
+
+        console.log(new_data);
+
+
+
+
+
         x.domain(d3.extent(data, function(d) { return d[Academic_Reputation_Score]; }));
+
         console.log(data[0]["Institution"]);
         console.log(y(data[0]["Institution"]));
-        //console.log(data.map(function(d) { return d.Institution; }));
-//        svg.append("g")
-//                .attr("class", "y axis")
-//                .call(yAxis)
-//                .append("text")
-//                .attr("transform", "rotate(-90)")
-//                .attr("y", 6)
-//                .attr("dy", ".71em")
-//                .style("text-anchor", "end")
-//                .text("Total bedrooms");
         var h = 20;
         svg.selectAll(".bar")
-                .data(data)
+                .data(new_data)
                 .enter().append("rect")
                 .attr("class", "bar")
-                .attr("x", 0)
-                .attr("width", function(d) { return x(d[Academic_Reputation_Score]); })
-                .attr("y", function(d) { return map[d[Institution]] * 30; })
-                .attr("height", h);
+                .attr("x", function(d) { return d["x"]; })
+                .attr("width", function(d) { return d["width"]; })
+                .attr("y", function(d) { return d["y"]; })
+                .attr("height", h)
+                .style("fill", function(d) { return d["color"]; });
     });
 </script>
