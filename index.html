@@ -41,22 +41,16 @@
             .append("g")
             .attr("transform", "translate(" + page_info.left + "," + page_info.top + ")");
 
+
     var page_width = 512,
         page_interval = 500;
 
     d3.csv(file_path, function(data) {
-        bar_width = initial_bar_width(options, page_width);
-        pages.push(initial_page(bar_width, "stacked bar", "max", 100, data, svg, "page0"));
-        pages.push(initial_page(bar_width, "seperate bar", "min", 100 + (page_width + page_interval) * 1, data, svg, "page1"));
-        pages.push(initial_page(bar_width, "stacked bar", "min", 100 + (page_width + page_interval) * 2, data, svg, "page2"));
-        pages.push(initial_page(bar_width, "seperate bar", "no", 100 + (page_width + page_interval) * 3, data, svg, "page3"));
-        pages.forEach(function(page){
-            draw_page(page);
-        })
-        for(i = 1; i < pages.length; i++){
-            var lines = produce_line(pages[i - 1], pages[i]);
-            draw_line(pages[i], lines);
-        }
+        initial_page(pages, "stacked bar", "max", data, svg, 0);
+        initial_page(pages, "stacked bar", "min", data, svg, 1);
+        initial_page(pages, "seperate bar", "min", data, svg, 2);
+        initial_page(pages, "seperate bar", "no", data, svg, 3);
+        draw();
     });
 </script>
 </body>
