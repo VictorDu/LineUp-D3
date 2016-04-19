@@ -31,26 +31,26 @@ function sort_data(page) {
             return sum;
         });
     }
-    page.data = new_data;
+    return new_data;
 }
 
 function produce_rect(page){
-    type = page.metadata.type;
-    data = page.data;
-    options = page.metadata.options;
-    options_metadata = page.options_metadata;
-    colors = page.metadata.colors;
-    name = page.metadata.name;
-    name_map = get_name_map(data);
+    var type = page.metadata.type;
+    var data = page.data;
+    var options = page.metadata.options;
+    var options_metadata = page.options_metadata;
+    var colors = page.metadata.colors;
+    var name = page.metadata.name;
+    var name_map = get_name_map(data);
     var rect_data = [];
     for (i =0; i < options.length ; i++) {
         options_metadata[options[i]]["x"].domain([0, 100]);
     }
     for (i = 0; i < data.length ; i++){
-        current = 0;
+        var current = 0;
         for( j = 0; j < options.length; j++){
             var temp = new Object();
-            option_name =options[j];
+            var option_name =options[j];
             if (type == "stacked bar") {
                 temp["x"] = current;
             } else {
@@ -60,6 +60,7 @@ function produce_rect(page){
             current += temp["width"];
             temp["y"] = name_map[data[i][name]] * page.metadata.bar_height;
             temp["color"] = colors[option_name];
+            temp["shift"] = temp["y"];
             rect_data.push(temp);
         }
     }
@@ -67,12 +68,12 @@ function produce_rect(page){
 }
 
 function produce_edge(page){
-    options = page.metadata.options;
-    options_metadata = page.options_metadata;
+    var options = page.metadata.options;
+    var options_metadata = page.options_metadata;
     var edge_data = [];
     for( j = 0; j < options.length; j++){
         var temp = new Object();
-        option_name =options[j];
+        var option_name =options[j];
         temp["x"] = options_metadata[option_name]["start"];
         temp["page"] = page.metadata.page_name
         temp["number"] = j;
@@ -83,11 +84,11 @@ function produce_edge(page){
 
 
 function produce_text(page){
-    name_map = get_name_map(data);
-    name = page.metadata.name;
+    var data = page.data;
+    var name_map = get_name_map(data);
+    var name = page.metadata.name;
     var name_data = [];
-    for (i = 0; i < data.length ; i++){
-        current = 0;
+    for (var i = 0; i < data.length ; i++){
         var temp = new Object();
         temp["x"] = 0;
         temp["y"] = name_map[data[i][name]] * page.metadata.bar_height;
@@ -99,23 +100,23 @@ function produce_text(page){
 
 function get_name_map(data){
     var name_map = new Object();
-    for (i = 0; i < data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
         name_map[data[i][name]] = i;
     }
     return name_map;
 }
 
 function produce_options_metadata(page){
-    options = page.metadata.options;
-    bar_width = page.metadata.bar_width;
+    var options = page.metadata.options;
+    var bar_width = page.metadata.bar_width;
     var options_metadata = new Object();
     var current_start = 0;
     for (i =0; i < options.length ; i++) {
-        option_name = options[i];
+        var option_name = options[i];
         options_metadata[option_name] = new Object();
         options_metadata[option_name]["parameters"] = bar_width[i];
         options_metadata[option_name]["start"] = current_start;
-        option_range = options_metadata[option_name]["parameters"];
+        var option_range = options_metadata[option_name]["parameters"];
         options_metadata[option_name]["x"] = d3.scale.linear().range([0, option_range]);
         current_start = current_start + option_range;
     }
@@ -160,14 +161,15 @@ function draw_edge(page){
         .call(drag_horizon);
 }
 
-function draw_page(page){
+function draw_page(page, sort){
     produce_options_metadata(page);
-    sort_data(page);
+    if(sort)
+        page.data = sort_data(page);
     produce_rect(page);
     produce_text(page);
     produce_edge(page);
-    draw_text(page);
     draw_rect(page);
+    draw_text(page);
     draw_edge(page);
 }
 
@@ -183,8 +185,8 @@ function update_shift(number){
     var shift = 100;
     for(var i = 0; i < number; i++){
         for(var j = 0; j < pages[i].metadata.bar_width.length; j++)
-            shift += bar_width[j];
-        shift += page_interval;
+            shift += pages[i].metadata.bar_width[j];
+        shift +=  page_interval;
     }
     pages[number].metadata.shift = shift;
 }
@@ -210,12 +212,12 @@ function initial_page(pages, type, sort, data, svg, page_name){
 }
 
 function produce_line(page1, page2){
-    result = [];
-    name = page1.metadata.name;
+    var result = [];
+    var name = page1.metadata.name;
     for(var i = 0; i < page1.data.length; i++){
         for(var j = 0; j < page2.data.length; j++){
             if(page1.data[i][name] == page2.data[j][name]){
-                line = new Object();
+                var line = new Object();
                 line["x1"] = 0;
                 line["y1"] = i * 30;
                 line["x2"] = 300;
@@ -238,7 +240,7 @@ function draw_line(page1, page2){
         .attr("y1", function(d) { return +d["y1"]; })
         .attr("y2", function(d) { return +d["y2"]; })
         .attr("stroke-width", 2)
-        .attr("stroke", "black")
+        .attr("stroke", "blue")
         .attr("transform", "translate("+ (page2.metadata.shift - 450) + "," + 30 + ")");
 }
 
@@ -250,10 +252,11 @@ function tdragresize(d) {
     update(d);
 }
 
-function draw(){
+function draw(sort){
     for(var i = 0; i < pages.length; i++){
         update_shift(i);
-        draw_page(pages[i]);
+        draw_page(pages[i], sort);
+        transition(pages[i]);
     }
     for(i = 1; i < pages.length; i++){
         draw_line(pages[i - 1], pages[i]);
@@ -277,6 +280,26 @@ function update(edge){
         var page = pages[edge["page"]];
         new_bar_width[edge["number"] - 1] = new_bar_width[edge["number"] - 1] + d3.event.dx;
         page.metadata.bar_width = new_bar_width;
-        draw();
+        draw(false);
     }
+}
+
+function transition(page){
+    new_data = sort_data(page);
+    var dict = {};
+    for(var i = 0; i < new_data.length; i++){
+        dict[new_data[i][name]] = i;
+    }
+    for(var i = 0; i < page.data.length; i++){
+        var n = dict[page.data[i][name]];
+        var shift = n * page.metadata.bar_height;
+        for( var j = 0; j < options.length; j++) {
+            page.rect_data[i * options.length + j]["shift"] = shift;
+        }
+    }
+    page.rect.transition()
+        .duration(300)
+        .attr("y", function(d) { return d["shift"]; });
+
+    page.data = new_data;
 }
