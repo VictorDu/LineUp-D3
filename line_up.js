@@ -170,9 +170,10 @@ function draw_edge(page){
         .attr("x1", function(d) { return +d["x"]; })
         .attr("x2", function(d) { return +d["x"]; })
         .attr("y1", 0)
-        .attr("y2", 10000)
+        .attr("y2", page.metadata.bar_height * page.data.length)
         .attr("stroke-width", 3)
         .attr("stroke", "black")
+        .attr("cursor", "ew-resize")
         .attr("transform", "translate("+ (page.metadata.shift + page.metadata.text_shift) + "," + 20 + ")")
         .call(drag_horizon);
 }
@@ -215,7 +216,7 @@ function initial_page(pages, type, sort, data, svg, page_name){
         colors: colors,
         name: name,
         options: options,
-        bar_height: 30,
+        bar_height: 25,
         bar_width: bar_width,
         text_shift: 100,
         line_width: 450,
@@ -237,9 +238,9 @@ function produce_line(page1, page2){
             if(page1.data[i][name] == page2.data[j][name]){
                 var line = new Object();
                 line["x1"] = 0;
-                line["y1"] = i * 30;
+                line["y1"] = i * page1.metadata.bar_height;
                 line["x2"] = 300;
-                line["y2"] = j * 30;
+                line["y2"] = j * page1.metadata.bar_height;
                 result.push(line);
                 break;
             }
@@ -321,9 +322,9 @@ function transition(page){
         if(n == i)
             new_color.push(page.name_data[i]["color"]);
         else if(n > i)
-            new_color.push("green");
-        else
             new_color.push("red");
+        else
+            new_color.push("green");
     }
     page.rect.transition()
         .duration(500)
