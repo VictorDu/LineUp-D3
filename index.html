@@ -11,6 +11,7 @@
 <body>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script type="text/javascript" src="line_up.js"></script>
+<script type="text/javascript" src="initial.js"></script>
 <script>
     var options = [
             "Academic Reputation Score",
@@ -47,8 +48,8 @@
 
     d3.csv(file_path, function(data) {
         initial_page(pages, "stacked bar", "max", data, svg, 0);
-        initial_page(pages, "stacked bar", "min", data, svg, 1);
-        initial_page(pages, "seperate bar", "min", data, svg, 2);
+        initial_page(pages, "stacked bar", "max", data, svg, 1);
+        initial_page(pages, "seperate bar", "max", data, svg, 2);
         initial_page(pages, "seperate bar", "max", data, svg, 3);
         draw(true);
     });
