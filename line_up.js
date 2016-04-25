@@ -18,6 +18,8 @@ function sort_data(page) {
                 var option_name = options[i];
                 sum = sum + (b[option_name] - a[option_name]) * page.metadata.bar_width[i];
             }
+            if(sum == 0)
+                return 1;
             return sum;
         });
     }else if(page.metadata.sort == "min"){
@@ -27,6 +29,8 @@ function sort_data(page) {
                 var option_name = options[i];
                 sum = sum + (a[option_name] - b[option_name]) * page.metadata.bar_width[i];
             }
+            if(sum == 0)
+                return 1;
             return sum;
         });
     }
@@ -47,7 +51,7 @@ function produce_rect(page){
     }
     for (var i = 0; i < data.length ; i++){
         var current = 0;
-        for( j = 0; j < options.length; j++){
+        for( var j = 0; j < options.length; j++){
             var temp = new Object();
             var option_name =options[j];
             if (type == "stacked bar") {
@@ -59,11 +63,26 @@ function produce_rect(page){
             current += temp["width"];
             temp["y"] = name_map[data[i][name]] * page.metadata.bar_height;
             temp["color"] = colors[option_name];
+            temp["name"] = data[i][name];
             rect_data.push(temp);
         }
     }
     page.rect_data = rect_data;
 }
+
+function produce_highlight_bar(page){
+    page.highlight_bar = new Object();
+    page.highlight_bar["color"] = "gray";
+    page.highlight_bar["x"] = -5;
+    page.highlight_bar["y"] = -5000;
+    page.highlight_bar["height"] = page.metadata.bar_height + 5;
+    page.highlight_bar["width"] = 10;
+    page.metadata.bar_width.forEach(function(width) {
+        page.highlight_bar["width"] += width;
+    });
+    page.highlight_bar["width"] += page.metadata.text_shift;
+}
+
 
 function produce_edge(page){
     var options = page.metadata.options;
@@ -136,6 +155,7 @@ function draw_rect(page){
         .attr("y", function(d) { return d["y"]; })
         .attr("height", page.metadata.bar_height * 0.75)
         .style("fill", function(d) { return d["color"]; })
+        .on("mouseover", function(d) { return handleMouseOver(d["name"]); })
         .attr("transform", "translate("+ (page.metadata.shift + page.metadata.text_shift) + "," + 20 + ")");
 }
 
@@ -159,6 +179,7 @@ function draw_text(page){
         .attr("y", function(d) { return d["y"]; })
         .attr("width", page.metadata.text_shift)
         .text( function(d) { return d["text"]; })
+        .on("mouseover", function(d) { return handleMouseOver(d["text"]); })
         .attr("transform", "translate("+ page.metadata.shift + "," + 37 + ")");
 
 }
@@ -178,6 +199,27 @@ function draw_edge(page){
         .call(drag_horizon);
 }
 
+function draw_highlight_bar(page){
+    page.highlight_rect = svg.append("rect")
+        .attr("width", page.highlight_bar["width"])
+        .attr('height', page.highlight_bar["height"])
+        .attr("x", page.highlight_bar["x"])
+        .attr("y", page.highlight_bar["y"])
+        .style('fill', page.highlight_bar["color"])
+        .attr("transform", "translate("+ page.metadata.shift + "," + 20 + ")");
+}
+
+function draw_super_line(page){
+    page.super_line = svg.append("line")
+        .attr("x1", 0)
+        .attr("x2", 0)
+        .attr("y1", 0)
+        .attr("y2", 0)
+        .attr("stroke-width", 20)
+        .attr("stroke", "red")
+        .attr("transform", "translate("+ (page.metadata.shift - page.metadata.line_width) + "," + 30 + ")");
+}
+
 function draw_page(page, sort){
     produce_options_metadata(page);
     if(sort)
@@ -185,9 +227,12 @@ function draw_page(page, sort){
     produce_rect(page);
     produce_text(page);
     produce_edge(page);
+    produce_highlight_bar(page);
+    draw_highlight_bar(page);
     draw_text(page);
     draw_rect(page);
     draw_edge(page);
+    draw_super_line(page);
 }
 
 function initial_bar_width(options, width){
@@ -216,10 +261,10 @@ function initial_page(pages, type, sort, data, svg, page_name){
         colors: colors,
         name: name,
         options: options,
-        bar_height: 25,
+        bar_height: bar_height,
         bar_width: bar_width,
         text_shift: 100,
-        line_width: 450,
+        line_width: page_interval,
         type: type,
         sort: sort,
         shift: 0,
@@ -239,8 +284,9 @@ function produce_line(page1, page2){
                 var line = new Object();
                 line["x1"] = 0;
                 line["y1"] = i * page1.metadata.bar_height;
-                line["x2"] = 300;
+                line["x2"] = page_interval;
                 line["y2"] = j * page1.metadata.bar_height;
+                line["name"] = page1.data[i][name];
                 result.push(line);
                 break;
             }
@@ -249,8 +295,10 @@ function produce_line(page1, page2){
     return result;
 }
 
+
 function draw_line(page1, page2){
     var lines = produce_line(page1, page2);
+    page2.line_info = lines;
     page2.line = svg.selectAll("line".concat(page2.metadata.page_name.toString()))
         .data(lines)
         .enter().append("line")
@@ -268,6 +316,7 @@ var drag_horizon = d3.behavior.drag()
     .on("drag", tdragresize);
 
 function tdragresize(d) {
+    console.log(d);
     update(d);
 }
 
@@ -288,6 +337,8 @@ function remove_graphic(){
         pages[i].edge.remove();
         pages[i].name.remove();
         pages[i].name_rect.remove();
+        pages[i].highlight_rect.remove();
+        pages[i].super_line.remove();
         if(i != 0)
             pages[i].line.remove();
     }
@@ -333,4 +384,33 @@ function transition(page){
         .style('fill', function(d, i) { return new_color[i]; });
     page.name.transition()
         .attr("y", function(d, i) { return new_y[i];} );
+}
+
+function handleMouseOver(name) {
+    for(var page_number = 0; page_number < pages.length; page_number++) {
+        var page_data = pages[page_number].data;
+        var name_info = pages[page_number].metadata.name;
+        var index = 10000;
+        for (var i = 0; i < page_data.length; i++) {
+            if (page_data[i][name_info] == name) {
+                index = i;
+            }
+        }
+        pages[page_number].highlight_rect.transition()
+            .attr("y", index * pages[page_number].metadata.bar_height - 5);
+    }
+    for(var page_number = 1; page_number < pages.length; page_number++) {
+        var line_info = pages[page_number].line_info;
+        var index = 10000;
+        for (var i = 0; i < line_info.length; i++) {
+            if (line_info[i]["name"] == name) {
+                index = i;
+            }
+        }
+        pages[page_number].super_line.transition()
+            .attr("x1", line_info[index]["x1"])
+            .attr("x2", line_info[index]["x2"])
+            .attr("y1", line_info[index]["y1"])
+            .attr("y2", line_info[index]["y2"]);
+    }
 }

@@ -11,7 +11,6 @@
 <body>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script type="text/javascript" src="line_up.js"></script>
-<script type="text/javascript" src="initial.js"></script>
 <script>
     var options = [
             "Academic Reputation Score",
@@ -43,8 +42,9 @@
             .attr("transform", "translate(" + page_info.left + "," + page_info.top + ")");
 
 
-    var page_width = 512,
-        page_interval = 500;
+    var page_width = 256,
+        page_interval = 200,
+        bar_height = 25;
 
     d3.csv(file_path, function(data) {
         initial_page(pages, "stacked bar", "max", data, svg, 0);
