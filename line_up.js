@@ -156,7 +156,7 @@ function draw_rect(page){
         .attr("height", page.metadata.bar_height * 0.75)
         .style("fill", function(d) { return d["color"]; })
         .on("mouseover", function(d) { return handleMouseOver(d["name"]); })
-        .attr("transform", "translate("+ (page.metadata.shift + page.metadata.text_shift) + "," + 20 + ")");
+        .attr("transform", "translate("+ (page.metadata.shift + page.metadata.text_shift) + "," + page.metadata.vertical_shift + ")");
 }
 
 function draw_text(page){
@@ -169,7 +169,7 @@ function draw_text(page){
         .attr("y", function(d) { return d["y"]; })
         .style('fill', function(d) { return d["color"]; })
         .attr('stroke', 'black')
-        .attr("transform", "translate("+ page.metadata.shift + "," + 20 + ")");
+        .attr("transform", "translate("+ page.metadata.shift + "," + page.metadata.vertical_shift + ")");
 
 
     page.name = svg.selectAll("name".concat(page.metadata.page_name.toString()))
@@ -178,9 +178,10 @@ function draw_text(page){
         .attr("x", function(d) { return d["x"]; })
         .attr("y", function(d) { return d["y"]; })
         .attr("width", page.metadata.text_shift)
+        .attr("font-size", font_size)
         .text( function(d) { return d["text"]; })
         .on("mouseover", function(d) { return handleMouseOver(d["text"]); })
-        .attr("transform", "translate("+ page.metadata.shift + "," + 37 + ")");
+        .attr("transform", "translate("+ page.metadata.shift + "," + (page.metadata.vertical_shift + text_vertical_shift) + ")");
 
 }
 
@@ -195,7 +196,7 @@ function draw_edge(page){
         .attr("stroke-width", 3)
         .attr("stroke", "black")
         .attr("cursor", "ew-resize")
-        .attr("transform", "translate("+ (page.metadata.shift + page.metadata.text_shift) + "," + 20 + ")")
+        .attr("transform", "translate("+ (page.metadata.shift + page.metadata.text_shift) + "," + page.metadata.vertical_shift + ")")
         .call(drag_horizon);
 }
 
@@ -206,7 +207,7 @@ function draw_highlight_bar(page){
         .attr("x", page.highlight_bar["x"])
         .attr("y", page.highlight_bar["y"])
         .style('fill', page.highlight_bar["color"])
-        .attr("transform", "translate("+ page.metadata.shift + "," + 20 + ")");
+        .attr("transform", "translate("+ page.metadata.shift + "," + page.metadata.vertical_shift + ")");
 }
 
 function draw_super_line(page){
@@ -217,7 +218,7 @@ function draw_super_line(page){
         .attr("y2", 0)
         .attr("stroke-width", 20)
         .attr("stroke", "red")
-        .attr("transform", "translate("+ (page.metadata.shift - page.metadata.line_width) + "," + 30 + ")");
+        .attr("transform", "translate("+ (page.metadata.shift - page.metadata.line_width) + "," + (page.metadata.vertical_shift + page.metadata.bar_height * 0.75 * 0.5) + ")");
 }
 
 function draw_page(page, sort){
@@ -263,11 +264,12 @@ function initial_page(pages, type, sort, data, svg, page_name){
         options: options,
         bar_height: bar_height,
         bar_width: bar_width,
-        text_shift: 100,
+        text_shift: text_shift,
         line_width: page_interval,
         type: type,
         sort: sort,
         shift: 0,
+        vertical_shift: vertical_shift,
         svg: svg,
         page_name: page_name
     }
@@ -298,6 +300,7 @@ function produce_line(page1, page2){
 
 function draw_line(page1, page2){
     var lines = produce_line(page1, page2);
+    var vertical_shift = page1.metadata.vertical_shift + page1.metadata.bar_height * 0.75 * 0.5;
     page2.line_info = lines;
     page2.line = svg.selectAll("line".concat(page2.metadata.page_name.toString()))
         .data(lines)
@@ -308,7 +311,7 @@ function draw_line(page1, page2){
         .attr("y2", function(d) { return +d["y2"]; })
         .attr("stroke-width", 2)
         .attr("stroke", "blue")
-        .attr("transform", "translate("+ (page2.metadata.shift - page2.metadata.line_width) + "," + 30 + ")");
+        .attr("transform", "translate("+ (page2.metadata.shift - page2.metadata.line_width) + "," + vertical_shift + ")");
 }
 
 var drag_horizon = d3.behavior.drag()
