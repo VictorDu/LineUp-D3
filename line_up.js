@@ -221,13 +221,21 @@ function draw_super_line(page){
 }
 
 function draw_page(page, sort){
+    //console.log(page);
+
     produce_options_metadata(page);
     if(sort)
         page.data = sort_data(page);
+
+    produce_verti(page);
+
     produce_rect(page);
     produce_text(page);
     produce_edge(page);
     produce_highlight_bar(page);
+
+    draw_verti(page);
+
     draw_highlight_bar(page);
     draw_text(page);
     draw_rect(page);
@@ -271,6 +279,9 @@ function initial_page(pages, type, sort, data, svg, page_name){
         svg: svg,
         page_name: page_name
     }
+
+    a="Academic Reputation Score";
+    console.log(data["Academic Reputation Score"]);
     new_page.data = data;
     pages.push(new_page);
 }
@@ -316,7 +327,7 @@ var drag_horizon = d3.behavior.drag()
     .on("drag", tdragresize);
 
 function tdragresize(d) {
-    console.log(d);
+    //console.log(d);
     update(d);
 }
 
