@@ -216,9 +216,21 @@ function draw_super_line(page){
         .attr("x2", 0)
         .attr("y1", 0)
         .attr("y2", 0)
-        .attr("stroke-width", 20)
+        .attr("stroke-width", 10)
         .attr("stroke", "red")
         .attr("transform", "translate("+ (page.metadata.shift - page.metadata.line_width) + "," + (page.metadata.vertical_shift + page.metadata.bar_height * 0.75 * 0.5) + ")");
+}
+
+function draw_label(page){
+    page.label = svg.selectAll("label".concat(page.metadata.page_name.toString()))
+        .data(page.metadata.options)
+        .enter().append("text")
+        .attr("x", function(d) { return page.options_metadata[d]["start"]; })
+        .attr("y", 0)
+        .attr("width", page.metadata.text_shift)
+        .attr("font-size", font_size)
+        .text( function(d) { return d; })
+        .attr("transform", "translate("+ (page.metadata.shift + page.metadata.text_shift) + "," + (page.metadata.vertical_shift  - 20) + ")");
 }
 
 function draw_page(page, sort){
@@ -230,6 +242,7 @@ function draw_page(page, sort){
     produce_edge(page);
     produce_highlight_bar(page);
     draw_highlight_bar(page);
+    draw_label(page);
     draw_text(page);
     draw_rect(page);
     draw_edge(page);
@@ -342,6 +355,7 @@ function remove_graphic(){
         pages[i].name_rect.remove();
         pages[i].highlight_rect.remove();
         pages[i].super_line.remove();
+        pages[i].label.remove();
         if(i != 0)
             pages[i].line.remove();
     }

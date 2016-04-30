@@ -42,13 +42,13 @@
             .attr("transform", "translate(" + page_info.left + "," + page_info.top + ")");
 
 
-    var page_width = 512,
+    var page_width = 512 + 256,
         page_interval = 300,
-        bar_height = 25,
+        bar_height = 15,
         text_shift = 150,
-        font_size="20px",
-        vertical_shift=200,
-        text_vertical_shift = 17;
+        font_size="10px",
+        vertical_shift=500,
+        text_vertical_shift = 10;
 
 
     d3.csv(file_path, function(data) {
