@@ -25,7 +25,7 @@ function vertiBar(x,y,height,width,data,column,num){
             .attr("height", function(d){return yScale(d[column]); })
             .attr("y",function(d){return height-yScale(d[column]); });
     }
-    console.log(bars);
+    return bars;
 }
 
 function produce_verti(page){
@@ -48,6 +48,6 @@ function draw_verti(page){
     var num = page.metadata.options.length;
     var info = page.verti_data;
     for(i=0;i<num;i++){
-        vertiBar(info[i]["x"],200,200,info[i]["width"],page.data,info[i]["column_name"],i);
+        vertiBar(info[i]["x"],0,50,info[i]["width"],page.data,info[i]["column_name"],i);
     }
 }
