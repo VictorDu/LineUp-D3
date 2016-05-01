@@ -24,23 +24,23 @@
 <script>
 
 
-    $(function(){
-        $(":checkbox").click(function(){
-            if($(this).attr("checked")!=undefined)
-            {
-                $(this).siblings().attr("checked",false);
-                $(this).attr("checked",true);
-            }
-        });
-    });
+//    $(function(){
+//        $(":checkbox").click(function(){
+//            if($(this).attr("checked")!=undefined)
+//            {
+//                $(this).siblings().attr("checked",false);
+//                $(this).attr("checked",true);
+//            }
+//        });
+//    });
 
 
 
     function myFunction() {
-        line_up("data/unvRank2013.json", ["stacked bar", "seperate bar"]);
+        line_up("data/cars.json", ["stacked bar", "seperate bar"]);
     }
 
-    var page_info = {top: 20, right: 20, bottom: 30, left: 40, width: 10000, height: 4000},
+    var page_info = {top: 20, right: 20, bottom: 30, left: 40, width: 10000, height: 10000},
         page_width = 512,
         page_interval = 200,
         bar_height = 15,

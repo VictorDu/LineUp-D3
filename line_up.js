@@ -504,6 +504,8 @@ function line_up(path, charts){
         file_path = data.file_path;
         name = data.name;
         d3.csv(file_path, function(data) {
+            if(data.length >= 100)
+                data = data.slice(1, 100);
             initial_chart();
             charts.forEach(function(chart) {
                 initial_page(chart, "max", data);
