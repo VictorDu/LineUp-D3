@@ -9,6 +9,7 @@ function string_to_number(data, options){
 
 function sort_data(page) {
     var options = page.metadata.options;
+    //console.log(page);
     var new_data = page.data.slice(0); // copy data
     new_data = string_to_number(new_data, options);
     if(page.metadata.sort == "max") {
@@ -221,11 +222,24 @@ function draw_super_line(page){
         .attr("transform", "translate("+ (page.metadata.shift - page.metadata.line_width) + "," + (page.metadata.vertical_shift + page.metadata.bar_height * 0.75 * 0.5) + ")");
 }
 
+function produce_label(page){
+    var total = 0;
+    page.metadata.bar_width.forEach(function(width) {
+        total += width;
+    });
+    page.label_info = [];
+    for(var i = 0; i < options.length; i++){
+        var percentage = Math.round(page.metadata.bar_width[i] / total * 10000) / 100;
+        page.label_info.push("" + percentage + "%");
+    }
+}
+
 function draw_label(page){
     page.label = svg.selectAll("label".concat(page.metadata.page_name.toString()))
-        .data(page.metadata.options)
+        .data(page.label_info)
         .enter().append("text")
-        .attr("x", function(d) { return page.options_metadata[d]["start"]; })
+        .attr("x", function(d, i) { return page.options_metadata[page.metadata.options[i]]["start"]+
+            page.metadata.bar_width[i] * 0.4; })
         .attr("y", 0)
         .attr("width", page.metadata.text_shift)
         .attr("font-size", font_size)
@@ -241,6 +255,7 @@ function draw_page(page, sort){
     produce_text(page);
     produce_edge(page);
     produce_highlight_bar(page);
+    produce_label(page);
     draw_highlight_bar(page);
     draw_label(page);
     draw_text(page);
@@ -267,7 +282,7 @@ function update_shift(number){
     pages[number].metadata.shift = shift;
 }
 
-function initial_page(pages, type, sort, data, svg, page_name){
+function initial_page(type, sort, data){
     var bar_width = initial_bar_width(options, page_width);
     var new_page = new Object();
     new_page.metadata = {
@@ -283,8 +298,7 @@ function initial_page(pages, type, sort, data, svg, page_name){
         sort: sort,
         shift: 0,
         vertical_shift: vertical_shift,
-        svg: svg,
-        page_name: page_name
+        page_name: pages.length
     }
     new_page.data = data;
     pages.push(new_page);
@@ -332,7 +346,7 @@ var drag_horizon = d3.behavior.drag()
     .on("drag", tdragresize);
 
 function tdragresize(d) {
-    console.log(d);
+    //console.log(d);
     update(d);
 }
 
@@ -430,4 +444,73 @@ function handleMouseOver(name) {
             .attr("y1", line_info[index]["y1"])
             .attr("y2", line_info[index]["y2"]);
     }
+}
+function initial_chart(){
+    var color = d3.scale.category20();
+    colors = {};
+    options.forEach(function(option) {
+        colors[option] = color(option);
+    })
+    if (typeof svg === "undefined") {
+        svg = d3.select("body").append("svg")
+            .attr("width", page_info.width + page_info.left + page_info.right)
+            .attr("height", page_info.height + page_info.top + page_info.bottom)
+            .append("g")
+            .attr("transform", "translate(" + page_info.left + "," + page_info.top + ")");
+    }else{
+        remove_graphic();
+        labels_text.remove();
+        labels_rect.remove();
+    }
+
+    labels = [], pages = [];
+
+    for(var i = 0; i < options.length; i++){
+        var label = new Object();
+        label["name"] = options[i];
+        label["color"] = colors[label["name"]];
+        label["x"] = label_horizon_shift * i;
+        label["y"] = 0;
+        label["text_x"] = label["x"] + 2 * bar_height;
+        label["width"] = bar_height;
+        label["height"] = bar_height;
+        labels.push(label);
+    }
+
+    labels_rect = svg.selectAll("labels_rect")
+        .data(labels)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return d["x"]; })
+        .attr("width", function(d) { return d["width"]; })
+        .attr("y", function(d) { return d["y"]; })
+        .attr("height", function(d) { return d["height"]; })
+        .style("fill", function(d) { return d["color"]; })
+        .attr("transform", "translate(0," + label_vertical_shift + ")");
+
+    labels_text = svg.selectAll("labels_text")
+        .data(labels)
+        .enter().append("text")
+        .attr("x", function(d) { return d["text_x"]; })
+        .attr("y", function(d) { return d["y"] + text_vertical_shift; })
+        .attr("font-size", font_size)
+        .text( function(d) { return d["name"]; })
+        .attr("transform", "translate(0," + label_vertical_shift + ")");
+}
+
+function line_up(path, charts){
+    d3.json(path, function(data) {
+        options = data.options;
+        file_path = data.file_path;
+        name = data.name;
+        d3.csv(file_path, function(data) {
+            if(data.length >= 100)
+                data = data.slice(1, 100);
+            initial_chart();
+            charts.forEach(function(chart) {
+                initial_page(chart, "max", data);
+            })
+            draw(true);
+        });
+    });
 }
