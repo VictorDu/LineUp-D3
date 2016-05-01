@@ -9,55 +9,55 @@
     }
 </style>
 <body>
+<form>
+    <input type="checkbox" name="chk_group[]" value="value1" />Value 1<br />
+    <input type="checkbox" name="chk_group[]" value="value2" />Value 2<br />
+    <input type="checkbox" name="chk_group[]" value="value3" />Value 3<br />
+    <select name="dropdown">
+        <option value="Maths" selected>Maths</option>
+        <option value="Physics">Physics</option>
+    </select>
+</form>
+<button type="button" onclick="myFunction()">Click Me!</button>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="vertical_bars.js"></script>
 <script type="text/javascript" src="line_up.js"></script>
 <script>
-    var options = [
-            "Academic Reputation Score",
-            "Employer Reputation Score",
-            "Faculty Student Score",
-            "Citations Per Faculty Score",
-            "International Faculty Score",
-            "International Students Score"
-        ],
-        colors = { "Academic Reputation Score": "#98abc5",
-            "Employer Reputation Score": "#8a89a6",
-            "Faculty Student Score": "#7b6888",
-            "Citations Per Faculty Score": "#6b486b",
-            "International Faculty Score": "#a05d56",
-            "International Students Score": "#d0743c"
-        },
-        file_path = "https://raw.githubusercontent.com/VictorDu/LineUp-D3/master/data/unvRank2013.csv",
-        name = "Institution";
 
 
-    var page_info = {top: 20, right: 20, bottom: 30, left: 40, width: 10000, height: 4000},
-        pages = [];
 
-    var svg = d3.select("body").append("svg")
-            .attr("width", page_info.width + page_info.left + page_info.right)
-            .attr("height", page_info.height + page_info.top + page_info.bottom)
-            .append("g")
-            .attr("transform", "translate(" + page_info.left + "," + page_info.top + ")");
+    var pages = [];
+
+//    $(function(){
+//        $(":checkbox").click(function(){
+//            if($(this).attr("checked")!=undefined)
+//            {
+//                $(this).siblings().attr("checked",false);
+//                $(this).attr("checked",true);
+//            }
+//        });
+//    });
 
 
-    var page_width = 512 + 256,
-        page_interval = 300,
+
+    function myFunction() {
+        line_up("data/cars.json", ["stacked bar", "seperate bar"]);
+    }
+
+    var page_info = {top: 20, right: 20, bottom: 30, left: 40, width: 10000, height: 10000},
+        page_width = 512,
+        page_interval = 200,
         bar_height = 15,
         text_shift = 150,
-        font_size = "10px",
-        vertical_shift = 500,
-        text_vertical_shift = 10,
         hist_height =100,
         hist_vertical = 100;
 
+        font_size="10px",
+        vertical_shift=500,
+        text_vertical_shift = 10,
+        label_vertical_shift = 400,
+        label_horizon_shift = 200;
 
-
-    d3.csv(file_path, function(data) {
-        initial_page(pages, "stacked bar", "max", data, svg, 0);
-        initial_page(pages, "seperate bar", "max", data, svg, 1);
-        draw(true);
-    });
+    //line_up("data/unvRank2013.json", ["stacked bar", "seperate bar", "stacked bar"]);
 </script>
 </body>
