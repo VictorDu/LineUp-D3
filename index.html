@@ -33,7 +33,6 @@
 
 
     var page_info = {top: 20, right: 20, bottom: 30, left: 40, width: 10000, height: 4000},
-        page_num = 1,
         pages = [];
 
     var svg = d3.select("body").append("svg")
@@ -47,9 +46,12 @@
         page_interval = 300,
         bar_height = 15,
         text_shift = 150,
-        font_size="10px",
-        vertical_shift=500,
-        text_vertical_shift = 10;
+        font_size = "10px",
+        vertical_shift = 500,
+        text_vertical_shift = 10,
+        hist_height =100,
+        hist_vertical = 100;
+
 
 
     d3.csv(file_path, function(data) {

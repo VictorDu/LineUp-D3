@@ -234,7 +234,7 @@ function draw_label(page){
 }
 
 function draw_page(page, sort){
-    //console.log(page);
+    console.log(page);
 
     produce_options_metadata(page);
     if(sort)
@@ -295,8 +295,6 @@ function initial_page(pages, type, sort, data, svg, page_name){
         page_name: page_name
     }
 
-    a="Academic Reputation Score";
-    console.log(data["Academic Reputation Score"]);
     new_page.data = data;
     pages.push(new_page);
 }
@@ -367,6 +365,8 @@ function remove_graphic(){
         pages[i].highlight_rect.remove();
         pages[i].super_line.remove();
         pages[i].label.remove();
+        pages[i].hist_bars.remove();
+        pages[i].hist_bars.remove();
         if(i != 0)
             pages[i].line.remove();
     }
