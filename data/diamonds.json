@@ -2,5 +2,5 @@
   "options": ["carat Score", "depth Score", "table Score", "price Score", "x Score", "y Score", "z Score"],
   "origin_path": "origin/origin_diamonds.csv",
   "file_path": "data/diamonds.csv",
-  "name": "Diamonds"
+  "name": "X"
 }
