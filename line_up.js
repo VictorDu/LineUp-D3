@@ -234,7 +234,6 @@ function draw_label(page){
 }
 
 function draw_page(page, sort){
-    console.log(page);
 
     produce_options_metadata(page);
     if(sort)
