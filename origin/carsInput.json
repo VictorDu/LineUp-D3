@@ -2,5 +2,5 @@
 	"options": ["MPG", "Cylinders", "Engine.Disp", "Horsepower", "Weight", "Accelerate"],
 	"origin_path": "origin/origin_cars.csv",
 	"file_path": "data/cars.csv",
-	"name": "Cars"
+	"name": "Model"
 }

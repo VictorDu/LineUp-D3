@@ -2,5 +2,5 @@
 	"options": ["carat", "depth", "table", "price", "x", "y","z"],
 	"origin_path": "origin/origin_diamonds.csv",
 	"file_path": "data/diamonds.csv",
-	"name": "Diamonds"
+	"name": "X"
 }
