@@ -1,0 +1,5 @@
+{
+  "options": [ "Academic Reputation Score","Employer Reputation Score","Faculty Student Score","Citations Per Faculty Score","International Faculty Score","International Students Score"],
+  "file_path": "data/unvRank2013.csv",
+  "name": "Institution"
+}
