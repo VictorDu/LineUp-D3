@@ -248,14 +248,23 @@ function draw_label(page){
 }
 
 function draw_page(page, sort){
+    //console.log(page);
     produce_options_metadata(page);
     if(sort)
         page.data = sort_data(page);
+
+    produce_verti(page);
+    produce_highlight_hist(page);
+
     produce_rect(page);
     produce_text(page);
     produce_edge(page);
     produce_highlight_bar(page);
     produce_label(page);
+
+
+    draw_verti(page);
+    draw_highlight_hist(page);
     draw_highlight_bar(page);
     draw_label(page);
     draw_text(page);
@@ -300,6 +309,7 @@ function initial_page(type, sort, data){
         vertical_shift: vertical_shift,
         page_name: pages.length
     }
+
     new_page.data = data;
     pages.push(new_page);
 }
@@ -370,6 +380,13 @@ function remove_graphic(){
         pages[i].highlight_rect.remove();
         pages[i].super_line.remove();
         pages[i].label.remove();
+        pages[i].hist_bars.remove();
+        pages[i].hist_bars.remove();
+        pages[i].highlight_hist_rects.forEach(
+            function(d){
+                d.remove();
+            }
+        );
         if(i != 0)
             pages[i].line.remove();
     }
@@ -418,6 +435,7 @@ function transition(page){
 }
 
 function handleMouseOver(name) {
+
     for(var page_number = 0; page_number < pages.length; page_number++) {
         var page_data = pages[page_number].data;
         var name_info = pages[page_number].metadata.name;
@@ -429,6 +447,8 @@ function handleMouseOver(name) {
         }
         pages[page_number].highlight_rect.transition()
             .attr("y", index * pages[page_number].metadata.bar_height - 5);
+
+        mouse_over_hist(name,pages[page_number]);
     }
     for(var page_number = 1; page_number < pages.length; page_number++) {
         var line_info = pages[page_number].line_info;
@@ -445,6 +465,7 @@ function handleMouseOver(name) {
             .attr("y2", line_info[index]["y2"]);
     }
 }
+
 function initial_chart(){
     var color = d3.scale.category20();
     colors = {};
