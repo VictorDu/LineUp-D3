@@ -382,6 +382,11 @@ function remove_graphic(){
         pages[i].label.remove();
         pages[i].hist_bars.remove();
         pages[i].hist_bars.remove();
+        pages[i].highlight_hist_rects.forEach(
+            function(d){
+                d.remove();
+            }
+        );
         if(i != 0)
             pages[i].line.remove();
     }
