@@ -75,7 +75,7 @@ function draw_highlight_hist(page){
                 .attr("y", page.highlight_hist[i]["y"])
                 .style('fill', "gray")
                 .style("opacity",.6)
-                .attr("transform", "translate("+ (page.metadata.shift + page.metadata.text_shift) + "," + (page.metadata.vertical_shift-hist_height-50) + ")");
+                .attr("transform", "translate("+ (page.metadata.shift + page.metadata.text_shift) + "," + (page.metadata.vertical_shift-hist_height-hist_vertical) + ")");
             page.highlight_hist_rects.push(hist_rect);
         }
     }

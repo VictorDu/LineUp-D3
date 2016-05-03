@@ -192,10 +192,10 @@ function draw_edge(page){
         .enter().append("line")
         .attr("x1", function(d) { return +d["x"]; })
         .attr("x2", function(d) { return +d["x"]; })
-        .attr("y1", 0)
+        .attr("y1", 0 - (hist_height + hist_vertical))
         .attr("y2", page.metadata.bar_height * page.data.length)
         .attr("stroke-width", 3)
-        .attr("stroke", "black")
+        .attr("stroke", "gray")
         .attr("cursor", "ew-resize")
         .attr("transform", "translate("+ (page.metadata.shift + page.metadata.text_shift) + "," + page.metadata.vertical_shift + ")")
         .call(drag_horizon);
