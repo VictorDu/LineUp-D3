@@ -519,7 +519,7 @@ function initial_chart(){
         .attr("transform", "translate(0," + label_vertical_shift + ")");
 }
 
-function line_up(path, charts){
+function line_up(path, charts,order){
     d3.json(path, function(data) {
         options = data.options;
         file_path = data.file_path;
@@ -529,8 +529,8 @@ function line_up(path, charts){
                 data = data.slice(1, 100);
             initial_chart();
             charts.forEach(function(chart) {
-                initial_page(chart, "max", data);
-            })
+                initial_page(chart, order, data);
+            });
             draw(true);
         });
     });

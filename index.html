@@ -96,6 +96,9 @@
           </div>
           <div class="control-group">&nbsp;</div>
           <div class="row">
+            <div class = "col-md-3">
+              <label class="checkbox-inline"><input type="checkbox" value="true" id = "isMin">Ascending order</label>
+            </div>
             <div class = "col-md-offset-10">
               <a class="btn btn-lg btn-primary" onclick="myFunction()" role="button">Submit</a>
             </div>
@@ -153,9 +156,13 @@
       function myFunction() {
         var data_set_conf = get_data_set_config();
         var bar_styles=set_selected_style();
+        var order = "max";
+        if($("#isMin").is(':checked')){
+          order = "min";
+        }
         console.log(bar_styles);
         if(data_set_conf != null && bar_styles.length > 0) {
-          line_up(data_set_conf, bar_styles);
+          line_up(data_set_conf, bar_styles, order);
         }
       }
 
