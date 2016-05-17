@@ -1,0 +1,6 @@
+{
+  "options": ["PointsForOnCourt", "PointsOppOnCourt", "ORebForOnCourt", "ORebOppOnCourt", "DRebForOnCourt", "DRebOppOnCourt", "PointsForOffCourt", "PointsOppOffCourt","ORebForOffCourt","ORebOppOffCourt","DRebForOffCourt","DRebOppOffCourt"],
+  "origin_path": "origin/NBAPlayer2009.csv",
+  "file_path": "data/nba2009.csv",
+  "name": "PlayerTrueName"
+}

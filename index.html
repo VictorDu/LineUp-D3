@@ -63,46 +63,56 @@
 
       <!-- Main component for a primary marketing message or call to action -->
       <div class="jumbotron form-group">
-        <div class="row">
-          <div class="col-md-4"><label class="radio-inline"><input type="radio" name="optradio" value="universityRank">University Rank</label></div>
-          <div class="col-md-4"><label class="radio-inline"><input type="radio" name="optradio" value="cars">Cars</label></div>
-          <div class="col-md-4"><label class="radio-inline"><input type="radio" name="optradio" value="diamond">Diamond</label></div>
+        <label for = "datasets"><h3>Data Sets</h3></label>
+        <div class="row" id = "datasets">
+          <div class="col-md-3"><label class="radio-inline"><input type="radio" name="optradio" value="universityRank" checked onclick="showRanking()">University Rank</label></div>
+          <div class="col-md-3"><label class="radio-inline"><input type="radio" name="optradio" value="cars" onclick="showRanking()">Cars</label></div>
+          <div class="col-md-3"><label class="radio-inline"><input type="radio" name="optradio" value="diamond" onclick="showRanking()">Diamond</label></div>
+          <div class="col-md-3"><label class="radio-inline"><input type="radio" name="optradio" value="nba" onclick="showRanking()">NBA Player 2009</label></div>
         </div>
        <br>
+        <label for = "styles"><h3>Ranking display</h3></label>
         <div class="row">
+          <div class = "col-md-3">
+            <label class="checkbox-inline"><input type="checkbox" value="true" id = "isMin" onclick="showRanking()">Ascending order</label>
+          </div>
+          <!--<div class = "col-md-offset-10">-->
+          <!--<a class="btn btn-lg btn-primary" onclick="showRanking()" role="button">Submit</a>-->
+          <!--</div>-->
+        </div>
+        <div class="control-group">&nbsp;</div>
+        <div class="row" id="styles">
         <div class="col-md-4">
           <label for="bar_style_1">Ranking1</label>
-          <select class="form-control" id="bar_style_1">
-            <option value="0">Hide</option>
-            <option value="1">Stacked bar</option>
-            <option value="2">Separated bar</option>
-          </select>
+          <div class="row" id="bar_style_1">
+            <div class="col-md-12"><label class="radio-inline"><input type="radio" name="rankStyle1" value="0" onclick="showRanking()">Hide</label></div>
+            <div class="col-md-12"><label class="radio-inline"><input type="radio" name="rankStyle1" value="1" onclick="showRanking()" checked>Stacked bar</label></div>
+            <div class="col-md-12"><label class="radio-inline"><input type="radio" name="rankStyle1" value="2" onclick="showRanking()">Separated bar</label></div>
+          </div>
+          <!--<select class="form-control" id="bar_style_1">-->
+            <!--<option value="0">Hide</option>-->
+            <!--<option value="1">Stacked bar</option>-->
+            <!--<option value="2">Separated bar</option>-->
+          <!--</select>-->
         </div>
           <div class="col-md-4">
             <label for="bar_style_2">Ranking2</label>
-            <select class="form-control" id="bar_style_2">
-              <option value="0">Hide</option>
-              <option value="1">Stacked bar</option>
-              <option value="2">Separated bar</option>
-            </select>
+            <div class="row" id="bar_style_2">
+              <div class="col-md-12"><label class="radio-inline"><input type="radio" name="rankStyle2" value="0" onclick="showRanking()">Hide</label></div>
+              <div class="col-md-12"><label class="radio-inline"><input type="radio" name="rankStyle2" value="1" checked onclick="showRanking()">Stacked bar</label></div>
+              <div class="col-md-12"><label class="radio-inline"><input type="radio" name="rankStyle2" value="2" onclick="showRanking()">Separated bar</label></div>
+            </div>
           </div>
           <div class="col-md-4">
             <label for="bar_style_3">Ranking3</label>
-            <select class="form-control" id="bar_style_3">
-              <option value="0">Hide</option>
-              <option value="1">Stacked bar</option>
-              <option value="2">Separated bar</option>
-            </select>
-          </div>
-          <div class="control-group">&nbsp;</div>
-          <div class="row">
-            <div class = "col-md-3">
-              <label class="checkbox-inline"><input type="checkbox" value="true" id = "isMin">Ascending order</label>
-            </div>
-            <div class = "col-md-offset-10">
-              <a class="btn btn-lg btn-primary" onclick="myFunction()" role="button">Submit</a>
+            <div class="row" id="bar_style_3">
+              <div class="col-md-12"><label class="radio-inline"><input type="radio" name="rankStyle3" value="0" onclick="showRanking()">Hide</label></div>
+              <div class="col-md-12"><label class="radio-inline"><input type="radio" name="rankStyle3" value="1" onclick="showRanking()" checked>Stacked bar</label></div>
+              <div class="col-md-12"><label class="radio-inline"><input type="radio" name="rankStyle3" value="2" onclick="showRanking()">Separated bar</label></div>
             </div>
           </div>
+
+
 
         </div>
       </div>
@@ -132,14 +142,16 @@
                 return "data/cars.json";
           case "diamond":
                 return "data/diamonds.json";
+          case "nba":
+                return "data/nba2009.json";
           default:
                 return null;
         }
       }
       function set_selected_style(){
         var bar_styles=[];
-        for(var x= 0; x<=3; x++) {
-          switch ($("#bar_style_" + x.toString()).val()) {
+        for(var x= 1; x<=3; x++) {
+          switch ($("input:radio[name=rankStyle" + x.toString() + "]:checked").val()) {
             case "0":
               break;
             case "1":
@@ -153,7 +165,8 @@
       }
 
 
-      function myFunction() {
+      function showRanking() {
+        console.log("1111111111");
         var data_set_conf = get_data_set_config();
         var bar_styles=set_selected_style();
         var order = "max";
@@ -165,6 +178,12 @@
           line_up(data_set_conf, bar_styles, order);
         }
       }
+
+      $(window).load(function(){
+        showRanking()
+//        $().on('click',showRanking());
+      });
+
 
       var page_info = {top: 20, right: 20, bottom: 30, left: 40, width: 10000, height: 10000},
               page_width = 512,
