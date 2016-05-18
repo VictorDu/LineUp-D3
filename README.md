@@ -4,11 +4,11 @@ A project that implement Lineup project in D3.js.
 
 Lineup comes from the paper: [LineUp: Visual Analysis of Multi-Attribute Rankings](http://www.jku.at/cg/content/e152197/e212741/2013_InfoVis_Gratzl_LineUp.pdf). It is a tool for multi-attribute ranking visualization.
 
-As the final assignment for Data Graphics course in USF, we\([Wentao Du](https://github.com/VictorDu), [Siwei Zhang](https://github.com/daniel0128), [Kaijie Zhou](https://github.com/kaijiezhou) \) implemented a subset for Lineup in D3.js and Javascript.
+As the final assignment for Data Graphics course in USF, we\([Wentao Du](https://github.com/VictorDu), [Siwei Zhang](https://github.com/daniel0128), [Kaijie Zhou](https://github.com/kaijiezhou) \) implemented a subset for Lineup in [D3.js](https://d3js.org/) and Javascript.
 
-In this project, we use R script to clean the incoming dataset. We need use to provide a Json file to tell us which attributes are needed to be used for ranking. The R script will transform the dataset into the input of our Javascrip function. And the Javascript function will show the ranking table.
+In this project, we use [R script](https://www.r-project.org/) to clean the incoming dataset. We need use to provide a Json file to tell us which attributes are needed to be used for ranking. The R script will transform the dataset into the input of our Javascrip function. And the Javascript function will show the ranking table.
 
-For now, we've already cleaned four datasets for demo: University ranking for 2013, Cars dataset and NBA player performance dataset for 2009. We also provide a control panel for user to play with the datasets we provided.
+For now, we've already cleaned four datasets for demo: University ranking for 2013, Cars dataset and NBA player performance dataset for 2009. We also provide a control panel for user to play with the datasets we provided. The control panel is implemented by [Bootstrap](http://getbootstrap.com/).
 ## Contents
 **index.html:** The index page of the project demo. The implementation of control panel is here.
 
